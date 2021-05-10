@@ -1,4 +1,4 @@
-from .ezpymysql import Connection
+from sec1_1.ezpymysql import Connection
 
 db = Connection(
     'localhost',

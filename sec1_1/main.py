@@ -1,6 +1,7 @@
-from .functions import downloader
-from .ezpymysql import Connection
+from sec1_1.functions import downloader
+from sec1_1.ezpymysql import Connection
 from lxml import etree
+import re
 
 
 class SinaNews():
@@ -40,12 +41,14 @@ class SinaNews():
         tree = etree.HTML(html)
         # 全部a标签
         hrefs = tree.xpath('//a')
-        # texts = tree.xpath('//a/text()')
 
         for href in hrefs:
             if href.get('href') is not None and 'doc-' in href.get('href') and not self._has_repeat_data('url',href.get('href')):
-                if href.text == "" or href.text is None:
-                    print("链接有问题：{}".format(href.get('href')))
+                if href.text == "" or href.text is None or re.findall(r'^[\t\n\s].*?$',href.text) != []:
+                    print("链接不规范：{}".format(href.get('href')))
+                    span = href.xpath(".//span")
+                    print(href.get('href'), '\t', span[0].text)
+                    self._insert_data(span[0].text, href.get('href'))
                 else:
                     # print(href.get('href'), '\t', href.text)
                     self._insert_data(href.text,href.get('href'))
@@ -54,8 +57,3 @@ class SinaNews():
 if __name__ == "__main__":
     sina = SinaNews()
     sina.parse_page()
-    # value = "https://news.sina.com.cn/c/2021-05-09/doc-ikmxzfmm1420444.shtml"
-    # if isinstance(value, str):
-    #     value = value.encode('utf8')
-    #
-    # print(type(value))
