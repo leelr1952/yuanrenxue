@@ -40,10 +40,10 @@ class SinaNews():
         html = self._download_news_page()
         tree = etree.HTML(html)
         # 全部a标签
-        hrefs = tree.xpath('//a')
+        hrefs = tree.xpath('//a[contains(@href,"doc-")]')
 
         for href in hrefs:
-            if href.get('href') is not None and 'doc-' in href.get('href') and not self._has_repeat_data('url',href.get('href')):
+            if not self._has_repeat_data('url',href.get('href')):
                 if href.text == "" or href.text is None or re.findall(r'^[\t\n\s].*?$',href.text) != []:
                     print("链接不规范：{}".format(href.get('href')))
                     span = href.xpath(".//span")
